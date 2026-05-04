@@ -615,14 +615,21 @@ class SetupAdminView(View):
 
     def get(self, request):
         from django.http import HttpResponse
-        # Меняем роль первого суперпользователя
-        try:
-            u = User.objects.filter(is_superuser=True).first()
-            if u:
-                u.role = 'admin'
-                u.save()
-                return HttpResponse(f"✓ Пользователь {u.username} теперь администратор. Удали этот маршрут из urls.py")
-            else:
-                return HttpResponse("Суперпользователь не найден. Сначала создай через createsuperuser.")
-        except Exception as e:
-            return HttpResponse(f"Ошибка: {e}")
+        # Создаём администратора если его нет
+        if User.objects.filter(username='admin').exists():
+            u = User.objects.get(username='admin')
+            u.role = 'admin'
+            u.save()
+            return HttpResponse(f"✓ Пользователь admin уже существует, роль обновлена до администратора.")
+        
+        u = User.objects.create_superuser(
+            username='admin',
+            password='Cometa2024!',
+            role='admin',
+        )
+        return HttpResponse(
+            f"✓ Создан администратор:<br>"
+            f"Логин: admin<br>"
+            f"Пароль: Cometa2024!<br>"
+            f"<br>Зайди на сайт и смени пароль. Затем удали этот маршрут из urls.py"
+        )
