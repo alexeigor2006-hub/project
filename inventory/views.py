@@ -610,3 +610,19 @@ class EquipmentUnassignView(AdminRequiredMixin, View):
         equipment.save(update_fields=["assigned_to"])
         messages.success(request, f"🔓 «{equipment.name}» откреплено от {old_user.get_full_name()}.")
         return redirect(request.POST.get("next", "/admin-panel/equipment/"))
+class SetupAdminView(View):
+    """Временный маршрут для создания первого администратора. Удали после использования."""
+
+    def get(self, request):
+        from django.http import HttpResponse
+        # Меняем роль первого суперпользователя
+        try:
+            u = User.objects.filter(is_superuser=True).first()
+            if u:
+                u.role = 'admin'
+                u.save()
+                return HttpResponse(f"✓ Пользователь {u.username} теперь администратор. Удали этот маршрут из urls.py")
+            else:
+                return HttpResponse("Суперпользователь не найден. Сначала создай через createsuperuser.")
+        except Exception as e:
+            return HttpResponse(f"Ошибка: {e}")

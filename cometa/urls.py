@@ -8,7 +8,7 @@ urlpatterns = [
     path('django-admin/', admin.site.urls),
     path('login/', auth_views.LoginView.as_view(template_name='inventory/login.html'), name='login'),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
-
+    path('setup-admin/', views.SetupAdminView.as_view(), name='setup_admin'),
     # Личный кабинет преподавателя
     path('dashboard/', views.TeacherDashboardView.as_view(), name='teacher_dashboard'),
     path('equipment/<int:equipment_id>/verify/', views.VerifyEquipmentView.as_view(), name='verify_equipment'),
