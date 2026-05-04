@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Cometa — Редактировать пользователя</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{background:#0d0f14;color:#e8ecf4;font-family:system-ui,sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:32px}
+    .card{background:#13161e;border:1px solid #252a38;border-radius:14px;padding:40px;width:480px}
+    h1{font-size:20px;font-weight:800;margin-bottom:6px}
+    .sub{font-size:13px;color:#6b7590;margin-bottom:28px}
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    .form-group{margin-bottom:16px}
+    .form-label{display:block;font-size:11px;font-weight:700;color:#6b7590;text-transform:uppercase;letter-spacing:.7px;margin-bottom:7px}
+    .form-control{width:100%;background:#1a1e29;border:1px solid #252a38;border-radius:8px;padding:10px 14px;color:#e8ecf4;font-family:inherit;font-size:14px;transition:border-color .15s}
+    .form-control:focus{outline:none;border-color:#4f8ef7}
+    select.form-control option{background:#1a1e29}
+    .btn{display:inline-flex;align-items:center;gap:6px;padding:11px 20px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;border:none;font-family:inherit;text-decoration:none;transition:opacity .15s}
+    .btn:hover{opacity:.85}
+    .btn-primary{background:#4f8ef7;color:#fff}
+    .btn-ghost{background:transparent;border:1px solid #252a38;color:#6b7590}
+    .btn-row{display:flex;gap:10px;justify-content:center;margin-top:24px}
+    .divider{height:1px;background:#252a38;margin:20px 0}
+    .error{background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.3);color:#f87171;border-radius:8px;padding:10px 14px;font-size:13px;margin-bottom:16px}
+    .success{background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.3);color:#34d399;border-radius:8px;padding:10px 14px;font-size:13px;margin-bottom:16px}
+    .hint{font-size:11px;color:#6b7590;margin-top:4px}
+    .status-active{color:#34d399}
+    .status-off{color:#f87171}
+  </style>
+</head>
+<body>
+<div class="card">
+  <h1>✏ Редактировать сотрудника</h1>
+  <div class="sub">@{{ employee.username }}</div>
+
+  {% for msg in messages %}
+    <div class="{% if msg.tags == 'error' %}error{% else %}success{% endif %}">{{ msg }}</div>
+  {% endfor %}
+
+  <form method="post">
+    {% csrf_token %}
+
+    <div class="row">
+      <div class="form-group">
+        <label class="form-label">Фамилия</label>
+        <input type="text" name="last_name" class="form-control"
+               value="{{ employee.last_name }}">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Имя</label>
+        <input type="text" name="first_name" class="form-control"
+               value="{{ employee.first_name }}">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Email</label>
+      <input type="email" name="email" class="form-control"
+             value="{{ employee.email }}">
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Кафедра</label>
+      <input type="text" name="department" class="form-control"
+             value="{{ employee.department }}">
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Телефон</label>
+      <input type="text" name="phone" class="form-control"
+             value="{{ employee.phone }}">
+    </div>
+
+    <div class="row">
+      <div class="form-group">
+        <label class="form-label">Роль</label>
+        <select name="role" class="form-control">
+          <option value="teacher" {% if employee.role == 'teacher' %}selected{% endif %}>
+            Преподаватель
+          </option>
+          <option value="admin" {% if employee.role == 'admin' %}selected{% endif %}>
+            Администратор
+          </option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Статус</label>
+        <select name="status" class="form-control">
+          <option value="active" {% if employee.status == 'active' %}selected{% endif %}>
+            ✅ Активен
+          </option>
+          <option value="offboarding" {% if employee.status == 'offboarding' %}selected{% endif %}>
+            ⚠ Увольняется
+          </option>
+          <option value="dismissed" {% if employee.status == 'dismissed' %}selected{% endif %}>
+            ✕ Уволен
+          </option>
+        </select>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="form-group">
+      <label class="form-label">Новый пароль <span style="color:#3d4561">(оставьте пустым чтобы не менять)</span></label>
+      <input type="password" name="new_password" class="form-control"
+             placeholder="Минимум 6 символов">
+      <div class="hint">Заполните только если нужно сменить пароль сотруднику</div>
+    </div>
+
+    <div class="btn-row">
+      <a href="/admin-panel/users/" class="btn btn-ghost">← Назад</a>
+      <button type="submit" class="btn btn-primary">Сохранить →</button>
+    </div>
+  </form>
+</div>
+</body>
+</html>

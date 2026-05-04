@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Cometa — История ТМЦ</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{background:#0d0f14;color:#e8ecf4;font-family:system-ui,sans-serif;min-height:100vh;display:flex}
+    .sidebar{width:220px;background:#13161e;border-right:1px solid #252a38;display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh}
+    .s-logo{padding:20px;border-bottom:1px solid #252a38}
+    .logo-row{display:flex;align-items:center;gap:8px}
+    .l-icon{width:30px;height:30px;background:#4f8ef7;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px}
+    .l-txt{font-size:16px;font-weight:800}
+    .l-sub{font-size:10px;color:#6b7590;letter-spacing:.5px;text-transform:uppercase}
+    .s-nav{padding:12px 8px;flex:1}
+    .nav-lbl{font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#3d4561;padding:0 10px;margin:10px 0 6px}
+    .nav-it{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:6px;font-size:12px;font-weight:500;color:#6b7590;text-decoration:none}
+    .nav-it:hover{background:#1a1e29;color:#e8ecf4}
+    .nav-it.active{background:rgba(79,142,247,.15);color:#4f8ef7}
+    .s-foot{padding:14px 20px;border-top:1px solid #1e2330}
+    .logout{display:flex;align-items:center;gap:6px;font-size:11px;color:#6b7590;background:none;border:none;cursor:pointer;font-family:inherit}
+    .logout:hover{color:#f87171}
+    .main{margin-left:220px;flex:1;display:flex;flex-direction:column}
+    .topbar{background:#13161e;border-bottom:1px solid #252a38;padding:14px 28px;display:flex;align-items:center;justify-content:space-between}
+    .pg-t{font-size:16px;font-weight:700}
+    .pg-s{font-size:11px;color:#6b7590;margin-top:2px}
+    .content{padding:28px;flex:1}
+    .eq-card{background:#13161e;border:1px solid #252a38;border-radius:12px;padding:20px 24px;margin-bottom:24px;display:flex;align-items:center;gap:20px}
+    .eq-icon{width:48px;height:48px;background:#1a1e29;border:1px solid #252a38;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+    .eq-name{font-size:17px;font-weight:700}
+    .eq-inv{font-family:monospace;font-size:12px;color:#6b7590;margin-top:2px}
+    .eq-meta{display:flex;gap:12px;margin-top:8px;flex-wrap:wrap}
+    .meta-chip{display:inline-flex;align-items:center;gap:5px;background:#1a1e29;border:1px solid #252a38;border-radius:6px;padding:3px 10px;font-size:11px;color:#6b7590}
+    .timeline{position:relative;padding-left:28px}
+    .timeline::before{content:'';position:absolute;left:10px;top:0;bottom:0;width:2px;background:#1e2330}
+    .tl-item{position:relative;margin-bottom:16px}
+    .tl-dot{position:absolute;left:-23px;top:14px;width:12px;height:12px;border-radius:50%;border:2px solid var(--bg);z-index:1}
+    .tl-dot.verified{background:#34d399}
+    .tl-dot.transferred{background:#4f8ef7}
+    .tl-dot.moved{background:#a78bfa}
+    .tl-dot.lost{background:#f87171}
+    .tl-dot.assigned{background:#fbbf24}
+    .tl-dot.written_off{background:#6b7590}
+    .tl-dot.other{background:#6b7590}
+    .tl-card{background:#13161e;border:1px solid #252a38;border-radius:10px;padding:14px 18px;transition:border-color .15s}
+    .tl-card:hover{border-color:#4f8ef7}
+    .tl-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+    .tl-type{font-size:13px;font-weight:700;display:flex;align-items:center;gap:7px}
+    .tl-time{font-size:11px;color:#6b7590;font-family:monospace}
+    .tl-body{font-size:12px;color:#6b7590;line-height:1.6}
+    .tl-body strong{color:#e8ecf4}
+    .tl-comment{margin-top:6px;padding:8px 12px;background:#0d0f14;border-radius:6px;font-size:12px;color:#6b7590;border-left:3px solid #252a38;font-style:italic}
+    .badge{display:inline-flex;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:700}
+    .badge-v{background:rgba(52,211,153,.1);color:#34d399}
+    .badge-t{background:rgba(79,142,247,.1);color:#4f8ef7}
+    .badge-m{background:rgba(167,139,250,.1);color:#a78bfa}
+    .badge-l{background:rgba(248,113,113,.1);color:#f87171}
+    .badge-a{background:rgba(251,191,36,.1);color:#fbbf24}
+    .badge-w{background:#1a1e29;color:#6b7590}
+    .empty{text-align:center;padding:48px;color:#6b7590}
+    .empty-icon{font-size:36px;margin-bottom:12px;opacity:.4}
+    .btn{display:inline-flex;align-items:center;gap:5px;padding:8px 16px;border-radius:7px;font-size:13px;font-weight:700;cursor:pointer;border:1px solid #252a38;background:transparent;color:#6b7590;font-family:inherit;text-decoration:none}
+    .btn:hover{border-color:#4f8ef7;color:#4f8ef7}
+  </style>
+</head>
+<body>
+<aside class="sidebar">
+  <div class="s-logo">
+    <div class="logo-row">
+      <div class="l-icon">☄</div>
+      <div><div class="l-txt">Cometa</div><div class="l-sub">Учёт ТМЦ</div></div>
+    </div>
+  </div>
+  <nav class="s-nav">
+    <div class="nav-lbl">Меню</div>
+    <a href="/admin-panel/" class="nav-it">🗂 Панель</a>
+    <a href="/admin-panel/equipment/" class="nav-it active">📦 Все ТМЦ</a>
+    <a href="/admin-panel/users/" class="nav-it">👥 Пользователи</a>
+    <a href="/dashboard/" class="nav-it">🖥 Мои ТМЦ</a>
+  </nav>
+  <div class="s-foot">
+    <form method="post" action="/logout/">
+      {% csrf_token %}
+      <button type="submit" class="logout">⎋ Выйти</button>
+    </form>
+  </div>
+</aside>
+
+<main class="main">
+  <div class="topbar">
+    <div>
+      <div class="pg-t">История ТМЦ</div>
+      <div class="pg-s">Все события по оборудованию</div>
+    </div>
+    <a href="/admin-panel/equipment/" class="btn">← Назад к списку</a>
+  </div>
+
+  <div class="content">
+
+    <!-- Карточка оборудования -->
+    <div class="eq-card">
+      <div class="eq-icon">
+        {% if equipment.category == 'computer' %}💻
+        {% elif equipment.category == 'laptop' %}🖥
+        {% elif equipment.category == 'monitor' %}🖵
+        {% elif equipment.category == 'printer' %}🖨
+        {% elif equipment.category == 'projector' %}📽
+        {% elif equipment.category == 'furniture' %}🪑
+        {% else %}📦{% endif %}
+      </div>
+      <div>
+        <div class="eq-name">{{ equipment.name }}</div>
+        <div class="eq-inv">Инв. № {{ equipment.inventory_number }}</div>
+        <div class="eq-meta">
+          <div class="meta-chip">{{ equipment.get_category_display }}</div>
+          {% if equipment.location %}
+          <div class="meta-chip">📍 {{ equipment.location }}</div>
+          {% endif %}
+          {% if equipment.assigned_to %}
+          <div class="meta-chip">👤 {{ equipment.assigned_to.get_full_name|default:equipment.assigned_to.username }}</div>
+          {% endif %}
+          <div class="meta-chip">{{ equipment.get_condition_display }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Тайм-лайн событий -->
+    {% if history %}
+    <div class="timeline">
+      {% for entry in history %}
+      <div class="tl-item">
+
+        <!-- Цвет точки по типу события -->
+        <div class="tl-dot
+          {% if entry.event_type == 'verified' %}verified
+          {% elif entry.event_type == 'transferred' %}transferred
+          {% elif entry.event_type == 'moved' %}moved
+          {% elif entry.event_type == 'reported_lost' %}lost
+          {% elif entry.event_type == 'assigned' %}assigned
+          {% elif entry.event_type == 'written_off' %}written_off
+          {% else %}other{% endif %}">
+        </div>
+
+        <div class="tl-card">
+          <div class="tl-head">
+            <div class="tl-type">
+              <!-- Иконка и бейдж типа события -->
+              {% if entry.event_type == 'verified' %}
+                ✅ <span class="badge badge-v">Подтверждено наличие</span>
+              {% elif entry.event_type == 'transferred' %}
+                ↗ <span class="badge badge-t">Передача сотруднику</span>
+              {% elif entry.event_type == 'moved' %}
+                📍 <span class="badge badge-m">Перемещение</span>
+              {% elif entry.event_type == 'reported_lost' %}
+                ⚠ <span class="badge badge-l">Сообщено об утере</span>
+              {% elif entry.event_type == 'assigned' %}
+                🔗 <span class="badge badge-a">Закреплено</span>
+              {% elif entry.event_type == 'unassigned' %}
+                🔓 <span class="badge badge-w">Откреплено</span>
+              {% elif entry.event_type == 'written_off' %}
+                🗑 <span class="badge badge-w">Списано</span>
+              {% else %}
+                📋 <span class="badge badge-w">{{ entry.get_event_type_display }}</span>
+              {% endif %}
+            </div>
+            <div class="tl-time">{{ entry.timestamp|date:"d.m.Y H:i" }}</div>
+          </div>
+
+          <div class="tl-body">
+            {% if entry.performed_by %}
+              Кто: <strong>{{ entry.performed_by.get_full_name|default:entry.performed_by.username }}</strong>
+            {% endif %}
+
+            {% if entry.from_user and entry.to_user %}
+              &nbsp;·&nbsp; От: <strong>{{ entry.from_user.get_full_name|default:entry.from_user.username }}</strong>
+              → Кому: <strong>{{ entry.to_user.get_full_name|default:entry.to_user.username }}</strong>
+            {% elif entry.to_user %}
+              &nbsp;·&nbsp; Кому: <strong>{{ entry.to_user.get_full_name|default:entry.to_user.username }}</strong>
+            {% endif %}
+
+            {% if entry.from_location and entry.to_location %}
+              &nbsp;·&nbsp; Из: <strong>{{ entry.from_location }}</strong>
+              → В: <strong>{{ entry.to_location }}</strong>
+            {% elif entry.to_location %}
+              &nbsp;·&nbsp; Местоположение: <strong>{{ entry.to_location }}</strong>
+            {% endif %}
+
+            {% if entry.comment %}
+            <div class="tl-comment">{{ entry.comment }}</div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    {% else %}
+    <div class="empty">
+      <div class="empty-icon">📭</div>
+      <div style="font-size:15px;font-weight:600;margin-bottom:6px">История пуста</div>
+      <div>Для этого оборудования ещё не было записано ни одного события</div>
+    </div>
+    {% endif %}
+
+  </div>
+</main>
+</body>
+</html>

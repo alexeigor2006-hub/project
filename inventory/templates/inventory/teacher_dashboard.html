@@ -1,0 +1,1090 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cometa — Личный кабинет</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <style>
+    /* ═══════════════════════════════════════════════════
+       DESIGN TOKENS
+    ═══════════════════════════════════════════════════ */
+    :root {
+      --bg:          #0d0f14;
+      --surface:     #13161e;
+      --surface-2:   #1a1e29;
+      --border:      #252a38;
+      --border-soft: #1e2330;
+
+      --text:        #e8ecf4;
+      --text-muted:  #6b7590;
+      --text-dim:    #3d4561;
+
+      --accent:      #4f8ef7;
+      --accent-glow: rgba(79,142,247,.18);
+      --accent-dark: #1a3a7a;
+
+      --green:       #34d399;
+      --green-bg:    rgba(52,211,153,.10);
+      --red:         #f87171;
+      --red-bg:      rgba(248,113,113,.10);
+      --amber:       #fbbf24;
+      --amber-bg:    rgba(251,191,36,.10);
+
+      --radius:      12px;
+      --radius-sm:   8px;
+      --font:        'Manrope', sans-serif;
+      --mono:        'JetBrains Mono', monospace;
+
+      --sidebar-w:   260px;
+    }
+
+    /* ═══════════════════════════════════════════════════
+       RESET & BASE
+    ═══════════════════════════════════════════════════ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      font-size: 14px;
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+    }
+
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { opacity: .8; }
+
+    /* ═══════════════════════════════════════════════════
+       SIDEBAR
+    ═══════════════════════════════════════════════════ */
+    .sidebar {
+      width: var(--sidebar-w);
+      min-height: 100vh;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0; left: 0;
+      z-index: 100;
+    }
+
+    .sidebar-logo {
+      padding: 28px 24px 20px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .logo-mark {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-icon {
+      width: 36px; height: 36px;
+      background: var(--accent);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+    }
+
+    .logo-text {
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: -.5px;
+      color: var(--text);
+    }
+
+    .logo-sub {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 2px;
+      letter-spacing: .5px;
+      text-transform: uppercase;
+    }
+
+    .sidebar-user {
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border-soft);
+    }
+
+    .user-avatar {
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      background: var(--accent-dark);
+      border: 2px solid var(--accent);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700;
+      font-size: 15px;
+      color: var(--accent);
+      margin-bottom: 10px;
+    }
+
+    .user-name {
+      font-weight: 600;
+      font-size: 13px;
+      color: var(--text);
+    }
+
+    .user-role {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .sidebar-nav {
+      flex: 1;
+      padding: 16px 12px;
+    }
+
+    .nav-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      padding: 0 12px;
+      margin: 16px 0 8px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 12px;
+      border-radius: var(--radius-sm);
+      color: var(--text-muted);
+      font-weight: 500;
+      font-size: 13.5px;
+      cursor: pointer;
+      transition: all .15s;
+    }
+
+    .nav-item:hover { background: var(--surface-2); color: var(--text); }
+    .nav-item.active { background: var(--accent-glow); color: var(--accent); }
+    .nav-item .icon { font-size: 16px; width: 20px; text-align: center; }
+
+    .sidebar-footer {
+      padding: 16px 24px;
+      border-top: 1px solid var(--border-soft);
+    }
+
+    .logout-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-muted);
+      font-size: 13px;
+      font-weight: 500;
+      padding: 8px 0;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-family: var(--font);
+      transition: color .15s;
+    }
+    .logout-btn:hover { color: var(--red); }
+
+    /* ═══════════════════════════════════════════════════
+       MAIN CONTENT
+    ═══════════════════════════════════════════════════ */
+    .main {
+      margin-left: var(--sidebar-w);
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* Top bar */
+    .topbar {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0; z-index: 90;
+    }
+
+    .page-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .page-sub {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 1px;
+    }
+
+    .topbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    /* ═══════════════════════════════════════════════════
+       CONTENT AREA
+    ═══════════════════════════════════════════════════ */
+    .content {
+      padding: 32px;
+      flex: 1;
+    }
+
+    /* ═══════════════════════════════════════════════════
+       MESSAGES / ALERTS
+    ═══════════════════════════════════════════════════ */
+    .messages {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 24px;
+    }
+
+    .alert {
+      padding: 12px 16px;
+      border-radius: var(--radius-sm);
+      font-size: 13.5px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border: 1px solid transparent;
+      animation: slideIn .2s ease;
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(-6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .alert-success { background: var(--green-bg); border-color: rgba(52,211,153,.3); color: var(--green); }
+    .alert-warning { background: var(--amber-bg); border-color: rgba(251,191,36,.3); color: var(--amber); }
+    .alert-error   { background: var(--red-bg);   border-color: rgba(248,113,113,.3); color: var(--red); }
+
+    /* ═══════════════════════════════════════════════════
+       STAT CARDS
+    ═══════════════════════════════════════════════════ */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      position: relative;
+      overflow: hidden;
+      transition: border-color .2s;
+    }
+
+    .stat-card:hover { border-color: var(--accent); }
+
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+    }
+
+    .stat-card.blue::before   { background: var(--accent); }
+    .stat-card.red::before    { background: var(--red); }
+    .stat-card.green::before  { background: var(--green); }
+
+    .stat-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: .8px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    .stat-value {
+      font-size: 32px;
+      font-weight: 800;
+      line-height: 1;
+      letter-spacing: -1px;
+    }
+
+    .stat-card.blue .stat-value  { color: var(--accent); }
+    .stat-card.red .stat-value   { color: var(--red); }
+    .stat-card.green .stat-value { color: var(--green); }
+
+    .stat-hint {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 6px;
+    }
+
+    /* ═══════════════════════════════════════════════════
+       SECTION HEADERS
+    ═══════════════════════════════════════════════════ */
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .section-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2px 8px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .badge-red   { background: var(--red-bg);   color: var(--red); }
+    .badge-green { background: var(--green-bg); color: var(--green); }
+    .badge-blue  { background: var(--accent-glow); color: var(--accent); }
+
+    /* ═══════════════════════════════════════════════════
+       EQUIPMENT TABLE
+    ═══════════════════════════════════════════════════ */
+    .table-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin-bottom: 32px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    thead th {
+      background: var(--surface-2);
+      padding: 12px 16px;
+      text-align: left;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .8px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+    }
+
+    tbody tr {
+      border-bottom: 1px solid var(--border-soft);
+      transition: background .12s;
+    }
+
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: var(--surface-2); }
+    tbody tr.needs-check { background: rgba(248,113,113,.04); }
+    tbody tr.needs-check:hover { background: rgba(248,113,113,.08); }
+
+    td {
+      padding: 14px 16px;
+      vertical-align: middle;
+    }
+
+    .equip-name {
+      font-weight: 600;
+      color: var(--text);
+      font-size: 13.5px;
+    }
+
+    .equip-inv {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .cat-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 3px 8px;
+      font-size: 11.5px;
+      color: var(--text-muted);
+    }
+
+    .location-text {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .location-none {
+      font-size: 12px;
+      color: var(--text-dim);
+      font-style: italic;
+    }
+
+    /* Статус проверки */
+    .verify-status {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+    }
+
+    .dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .dot-green { background: var(--green); box-shadow: 0 0 6px var(--green); }
+    .dot-red   { background: var(--red);   box-shadow: 0 0 6px var(--red); }
+    .dot-gray  { background: var(--text-dim); }
+
+    /* ═══════════════════════════════════════════════════
+       ACTION BUTTONS
+    ═══════════════════════════════════════════════════ */
+    .actions {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 6px 12px;
+      border-radius: var(--radius-sm);
+      font-size: 12px;
+      font-weight: 600;
+      font-family: var(--font);
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all .15s;
+      white-space: nowrap;
+    }
+
+    .btn-present {
+      background: var(--green-bg);
+      border-color: rgba(52,211,153,.3);
+      color: var(--green);
+    }
+    .btn-present:hover { background: rgba(52,211,153,.18); }
+
+    .btn-lost {
+      background: var(--red-bg);
+      border-color: rgba(248,113,113,.3);
+      color: var(--red);
+    }
+    .btn-lost:hover { background: rgba(248,113,113,.18); }
+
+    .btn-move {
+      background: var(--surface-2);
+      border-color: var(--border);
+      color: var(--text-muted);
+    }
+    .btn-move:hover { border-color: var(--accent); color: var(--accent); }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+    .btn-primary:hover { opacity: .85; }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-muted);
+      border-color: var(--border);
+    }
+    .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* ═══════════════════════════════════════════════════
+       MODAL
+    ═══════════════════════════════════════════════════ */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.65);
+      backdrop-filter: blur(4px);
+      z-index: 500;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .2s;
+    }
+
+    .modal-overlay.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .modal {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 32px;
+      width: 100%;
+      max-width: 460px;
+      transform: translateY(16px) scale(.97);
+      transition: transform .25s cubic-bezier(.34,1.56,.64,1);
+    }
+
+    .modal-overlay.open .modal {
+      transform: translateY(0) scale(1);
+    }
+
+    .modal-title {
+      font-size: 17px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .modal-sub {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: .6px;
+    }
+
+    .form-control {
+      width: 100%;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      color: var(--text);
+      font-family: var(--font);
+      font-size: 13.5px;
+      transition: border-color .15s;
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    .form-control option { background: var(--surface-2); }
+
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      margin-top: 24px;
+    }
+
+    /* ═══════════════════════════════════════════════════
+       EMPTY STATE
+    ═══════════════════════════════════════════════════ */
+    .empty-state {
+      text-align: center;
+      padding: 48px 24px;
+      color: var(--text-muted);
+    }
+
+    .empty-icon {
+      font-size: 40px;
+      margin-bottom: 12px;
+      opacity: .5;
+    }
+
+    .empty-title {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    /* ═══════════════════════════════════════════════════
+       HISTORY FEED (sidebar / bottom)
+    ═══════════════════════════════════════════════════ */
+    .history-feed {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    .feed-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--border-soft);
+    }
+
+    .feed-item:last-child { border-bottom: none; }
+
+    .feed-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+      margin-top: 5px;
+      flex-shrink: 0;
+    }
+
+    .feed-text {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .feed-text strong { color: var(--text); }
+
+    .feed-time {
+      font-size: 11px;
+      color: var(--text-dim);
+      font-family: var(--mono);
+      margin-top: 3px;
+    }
+
+    /* ═══════════════════════════════════════════════════
+       CATEGORY ICONS MAP
+    ═══════════════════════════════════════════════════ */
+    .icon-computer  { color: #60a5fa; }
+    .icon-laptop    { color: #818cf8; }
+    .icon-monitor   { color: #34d399; }
+    .icon-printer   { color: #fb923c; }
+    .icon-projector { color: #facc15; }
+    .icon-furniture { color: #a78bfa; }
+    .icon-other     { color: var(--text-muted); }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════
+     SIDEBAR
+══════════════════════════════ -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-mark">
+      <div class="logo-icon">☄</div>
+      <div>
+        <div class="logo-text">Cometa</div>
+        <div class="logo-sub">Учёт ТМЦ</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sidebar-user">
+    <div class="user-avatar">
+      {{ request.user.first_name|first|upper }}{{ request.user.last_name|first|upper }}
+    </div>
+    <div class="user-name">{{ request.user.get_full_name|default:request.user.username }}</div>
+    <div class="user-role">{{ request.user.get_role_display }}</div>
+  </div>
+
+  <nav class="sidebar-nav">
+    <div class="nav-label">Меню</div>
+    <a href="{% url 'teacher_dashboard' %}" class="nav-item active">
+      <span class="icon">📦</span> Мои ТМЦ
+    </a>
+    {% if request.user.is_admin %}
+    <a href="{% url 'admin_dashboard' %}" class="nav-item">
+      <span class="icon">🗂</span> Панель admin
+    </a>
+    {% endif %}
+  </nav>
+
+  <div class="sidebar-footer">
+    <form method="post" action="{% url 'logout' %}">
+      {% csrf_token %}
+      <button type="submit" class="logout-btn">
+        <span>⎋</span> Выйти
+      </button>
+    </form>
+  </div>
+</aside>
+
+<!-- ══════════════════════════════
+     MAIN
+══════════════════════════════ -->
+<main class="main">
+  <div class="topbar">
+    <div>
+      <div class="page-title">Личный кабинет</div>
+      <div class="page-sub">Учёт товарно-материальных ценностей</div>
+    </div>
+    <div class="topbar-actions">
+  <span style="font-size:12px;color:var(--text-muted)">
+    Обновлено: <span id="live-time"></span>
+  </span>
+  <a href="/equipment/add/"
+     style="display:inline-flex;align-items:center;gap:6px;padding:8px 16px;background:#4f8ef7;color:#fff;border-radius:8px;font-size:13px;font-weight:700;text-decoration:none">
+    ➕ Добавить ТМЦ
+  </a>
+</div>
+  </div>
+
+  <div class="content">
+
+    <!-- Уведомления Django messages -->
+    {% if messages %}
+    <div class="messages">
+      {% for msg in messages %}
+        <div class="alert alert-{% if msg.tags == 'error' %}error{% elif msg.tags == 'warning' %}warning{% else %}success{% endif %}">
+          {{ msg }}
+        </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Статистика -->
+    <div class="stats-grid">
+      <div class="stat-card blue">
+        <div class="stat-label">Всего ТМЦ</div>
+        <div class="stat-value">{{ total_count }}</div>
+        <div class="stat-hint">закреплено за вами</div>
+      </div>
+      <div class="stat-card red">
+        <div class="stat-label">Требуют проверки</div>
+        <div class="stat-value">{{ needs_check_count }}</div>
+        <div class="stat-hint">не проверялись >30 дней</div>
+      </div>
+      <div class="stat-card green">
+        <div class="stat-label">Актуально</div>
+        <div class="stat-value">{{ total_count|add:"-"|add:needs_check_count }}</div>
+        <div class="stat-hint">проверены недавно</div>
+      </div>
+    </div>
+
+    <!-- Блок: Требуют проверки -->
+    {% if equipment_needs_check %}
+    <div class="section-header">
+      <div class="section-title">
+        ⚠ Требуют проверки
+        <span class="badge badge-red">{{ equipment_needs_check|length }}</span>
+      </div>
+    </div>
+
+    <div class="table-wrap" style="margin-bottom:32px;">
+      <table>
+        <thead>
+          <tr>
+            <th>Оборудование</th>
+            <th>Категория</th>
+            <th>Местоположение</th>
+            <th>Последняя проверка</th>
+            <th>Действия</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in equipment_needs_check %}
+          <tr class="needs-check">
+            <td>
+              <div class="equip-name">{{ item.name }}</div>
+              <div class="equip-inv">№ {{ item.inventory_number }}</div>
+            </td>
+            
+            <td>
+              {% if item.location %}
+                <span class="location-text">📍 {{ item.location }}</span>
+              {% else %}
+                <span class="location-none">не указано</span>
+              {% endif %}
+            </td>
+            <td>
+              <div class="verify-status">
+                <div class="dot dot-red"></div>
+                {% if item.days_since_verification is not None %}
+                  <span style="color:var(--red)">{{ item.days_since_verification }} дн. назад</span>
+                {% else %}
+                  <span style="color:var(--red)">Никогда</span>
+                {% endif %}
+              </div>
+            </td>
+            <td>
+              <div class="actions">
+                <!-- Подтвердить -->
+                <form method="post" action="{% url 'verify_equipment' item.pk %}" style="display:inline">
+                  {% csrf_token %}
+                  <input type="hidden" name="action" value="present">
+                  <button type="submit" class="btn btn-present">✓ В наличии</button>
+                </form>
+                <form method="post" action="/equipment/{{ item.pk }}/delete/"
+                  onsubmit="return confirm('Удалить «{{ item.name }}» из учёта?')"
+                  style="display:inline">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-lost">🗑</button>
+                </form>
+                <!-- Перемещено/Передано -->
+                <button class="btn btn-move"
+                        onclick="openMoveModal({{ item.pk }}, '{{ item.name|escapejs }}')">
+                  ↗ Переместить
+                </button>
+                <!-- Утеряно -->
+                <button class="btn btn-lost"
+                        onclick="confirmLost({{ item.pk }}, '{{ item.name|escapejs }}')">
+                  ✕ Утеряно
+                </button>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% endif %}
+
+    <!-- Блок: Актуальные -->
+    <div class="section-header">
+      <div class="section-title">
+        ✓ Актуальные
+        <span class="badge badge-green">{{ equipment_up_to_date|length }}</span>
+      </div>
+    </div>
+
+    {% if equipment_up_to_date %}
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Оборудование</th>
+            <th>Категория</th>
+            <th>Местоположение</th>
+            <th>Последняя проверка</th>
+            <th>Действия</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in equipment_up_to_date %}
+          <tr>
+            <td>
+              <div class="equip-name">{{ item.name }}</div>
+              <div class="equip-inv">№ {{ item.inventory_number }}</div>
+            </td>
+            
+            <td>
+              {% if item.location %}
+                <span class="location-text">📍 {{ item.location }}</span>
+              {% else %}
+                <span class="location-none">не указано</span>
+              {% endif %}
+            </td>
+            <td>
+              <div class="verify-status">
+                <div class="dot dot-green"></div>
+                <span style="color:var(--text-muted)">{{ item.days_since_verification }} дн. назад</span>
+              </div>
+            </td>
+            <td>
+              <div class="actions">
+                <form method="post" action="{% url 'verify_equipment' item.pk %}" style="display:inline">
+                  {% csrf_token %}
+                  <input type="hidden" name="action" value="present">
+                  <button type="submit" class="btn btn-present">✓ Подтвердить</button>
+                </form>
+                <button class="btn btn-move"
+                        onclick="openMoveModal({{ item.pk }}, '{{ item.name|escapejs }}')">
+                  ↗
+                </button>
+                <button class="btn btn-lost"
+                        onclick="confirmLost({{ item.pk }}, '{{ item.name|escapejs }}')">
+                  ✕
+                </button>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="table-wrap">
+      <div class="empty-state">
+        <div class="empty-icon">📭</div>
+        <div class="empty-title">Нет актуальных записей</div>
+        <p>Подтвердите наличие оборудования выше, чтобы оно появилось здесь.</p>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- История действий -->
+    {% if recent_history %}
+    <div class="section-header" style="margin-top:32px;">
+      <div class="section-title">🕐 Последние действия</div>
+    </div>
+    <div class="history-feed">
+      {% for entry in recent_history %}
+      <div class="feed-item">
+        <div class="feed-dot"></div>
+        <div>
+          <div class="feed-text">
+            <strong>{{ entry.get_event_type_display }}</strong> —
+            {{ entry.equipment.name }}
+            {% if entry.to_user %} → {{ entry.to_user.get_full_name }}{% endif %}
+            {% if entry.to_location %} → {{ entry.to_location }}{% endif %}
+            {% if entry.comment %}<br><span style="font-size:12px">{{ entry.comment }}</span>{% endif %}
+          </div>
+          <div class="feed-time">{{ entry.timestamp|date:"d.m.Y H:i" }}</div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+  </div><!-- /content -->
+</main>
+
+
+<!-- MODAL: Переместить / Передать -->
+<div class="modal-overlay" id="moveModal">
+  <div class="modal">
+    <div class="modal-title">↗ Переместить оборудование</div>
+    <div class="modal-sub" id="moveModalSub"></div>
+
+    <form method="post" id="moveForm">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="moved">
+
+      <div class="form-group">
+        <label class="form-label">Новое местоположение (аудитория)</label>
+        <input type="text" name="location_name" class="form-control"
+               placeholder="Аудитория 301, Лаборатория ИТ...">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Передать сотруднику (имя или логин)</label>
+        <input type="text" name="transfer_to_name" class="form-control"
+               placeholder="Иванов Иван или @ivanov"
+               id="transferInput" autocomplete="off">
+        <input type="hidden" name="transfer_to" id="transferId">
+        <div id="userSuggestions" style="background:#1a1e29;border:1px solid #252a38;border-radius:8px;margin-top:4px;display:none;max-height:160px;overflow-y:auto"></div>
+        <div class="hint" style="margin-top:4px">Начните вводить имя для поиска</div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Комментарий</label>
+        <textarea name="comment" class="form-control" rows="3"
+                  placeholder="Причина перемещения..."></textarea>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" onclick="closeModal()">Отмена</button>
+        <button type="submit" class="btn btn-primary">Сохранить</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Форма для «Утеряно» (скрытая) -->
+<form method="post" id="lostForm" style="display:none">
+  {% csrf_token %}
+  <input type="hidden" name="action" value="lost">
+  <input type="hidden" name="comment" value="Сообщено об утере сотрудником">
+</form>
+
+<script>
+  // Живые часы в topbar
+  function updateTime() {
+    const el = document.getElementById('live-time');
+    if (el) el.textContent = new Date().toLocaleString('ru-RU');
+  }
+  updateTime();
+  setInterval(updateTime, 1000);
+
+  // Modal
+  function openMoveModal(equipId, equipName) {
+    document.getElementById('moveModalSub').textContent = equipName;
+    document.getElementById('moveForm').action = `/equipment/${equipId}/verify/`;
+    document.getElementById('moveModal').classList.add('open');
+  }
+
+  function closeModal() {
+    document.getElementById('moveModal').classList.remove('open');
+  }
+
+  document.getElementById('moveModal').addEventListener('click', function(e) {
+    if (e.target === this) closeModal();
+  });
+
+  // Подтверждение утери
+  function confirmLost(equipId, equipName) {
+    if (confirm(`Отметить «${equipName}» как утерянное?\n\nЭто действие уведомит администратора.`)) {
+      const form = document.getElementById('lostForm');
+      form.action = `/equipment/${equipId}/verify/`;
+      form.submit();
+    }
+  }
+
+  // Автоскрытие уведомлений через 5 сек
+  setTimeout(() => {
+    document.querySelectorAll('.alert').forEach(el => {
+      el.style.transition = 'opacity .5s';
+      el.style.opacity = '0';
+      setTimeout(() => el.remove(), 500);
+    });
+  }, 5000);
+// Автодополнение сотрудников
+const transferInput = document.getElementById('transferInput');
+const suggestions = document.getElementById('userSuggestions');
+const transferId = document.getElementById('transferId');
+
+if (transferInput) {
+  transferInput.addEventListener('input', async function() {
+    const q = this.value.trim();
+    transferId.value = '';
+    if (q.length < 2) { suggestions.style.display = 'none'; return; }
+
+    const resp = await fetch(`/users/search/?q=${encodeURIComponent(q)}`);
+    const data = await resp.json();
+
+    if (data.users.length === 0) { suggestions.style.display = 'none'; return; }
+
+    suggestions.innerHTML = data.users.map(u =>
+      `<div onclick="selectUser(${u.id},'${u.name}')"
+            style="padding:10px 14px;cursor:pointer;font-size:13px;border-bottom:1px solid #252a38"
+            onmouseover="this.style.background='#252a38'"
+            onmouseout="this.style.background=''"
+       ><strong>${u.name}</strong> <span style="color:#6b7590">@${u.login}</span></div>`
+    ).join('');
+    suggestions.style.display = 'block';
+  });
+
+  document.addEventListener('click', function(e) {
+    if (!transferInput.contains(e.target)) suggestions.style.display = 'none';
+  });
+}
+
+function selectUser(id, name) {
+  transferId.value = id;
+  transferInput.value = name;
+  suggestions.style.display = 'none';
+}
+</script>
+</body>
+</html>

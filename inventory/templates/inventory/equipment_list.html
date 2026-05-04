@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Cometa — Все ТМЦ</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{background:#0d0f14;color:#e8ecf4;font-family:system-ui,sans-serif;min-height:100vh;display:flex}
+    .sidebar{width:220px;background:#13161e;border-right:1px solid #252a38;display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh}
+    .s-logo{padding:20px;border-bottom:1px solid #252a38}
+    .logo-row{display:flex;align-items:center;gap:8px}
+    .l-icon{width:30px;height:30px;background:#4f8ef7;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px}
+    .l-txt{font-size:16px;font-weight:800}
+    .l-sub{font-size:10px;color:#6b7590;letter-spacing:.5px;text-transform:uppercase}
+    .s-nav{padding:12px 8px;flex:1}
+    .nav-lbl{font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#3d4561;padding:0 10px;margin:10px 0 6px}
+    .nav-it{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:6px;font-size:12px;font-weight:500;color:#6b7590;text-decoration:none}
+    .nav-it:hover{background:#1a1e29;color:#e8ecf4}
+    .nav-it.active{background:rgba(79,142,247,.15);color:#4f8ef7}
+    .s-foot{padding:14px 20px;border-top:1px solid #1e2330}
+    .logout{display:flex;align-items:center;gap:6px;font-size:11px;color:#6b7590;background:none;border:none;cursor:pointer;font-family:inherit}
+    .logout:hover{color:#f87171}
+    .main{margin-left:220px;flex:1;display:flex;flex-direction:column}
+    .topbar{background:#13161e;border-bottom:1px solid #252a38;padding:14px 28px;display:flex;align-items:center;justify-content:space-between}
+    .pg-t{font-size:16px;font-weight:700}
+    .pg-s{font-size:11px;color:#6b7590;margin-top:2px}
+    .content{padding:28px;flex:1}
+    .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:24px}
+    .sc{background:#13161e;border:2px solid #252a38;border-radius:10px;padding:16px 20px;cursor:pointer;text-decoration:none;display:block;transition:all .15s}
+    .sc:hover{border-color:#4f8ef7}
+    .sc.active-filter{border-color:#4f8ef7;background:#0d1629}
+    .sc.active-filter.r{border-color:#f87171;background:#1a0d0d}
+    .sc.active-filter.y{border-color:#fbbf24;background:#1a1500}
+    .s-lbl{font-size:10px;font-weight:700;letter-spacing:.7px;text-transform:uppercase;color:#6b7590;margin-bottom:6px}
+    .s-val{font-size:28px;font-weight:800;color:#4f8ef7}
+    .s-val.r{color:#f87171}.s-val.y{color:#fbbf24}
+    .s-hint{font-size:11px;color:#6b7590;margin-top:4px}
+    .table-wrap{background:#13161e;border:1px solid #252a38;border-radius:12px;overflow:hidden}
+    table{width:100%;border-collapse:collapse}
+    thead th{background:#1a1e29;padding:10px 14px;text-align:left;font-size:10px;font-weight:700;letter-spacing:.7px;text-transform:uppercase;color:#6b7590;border-bottom:1px solid #252a38}
+    tbody tr{border-bottom:1px solid #1e2330;transition:background .12s}
+    tbody tr:last-child{border-bottom:none}
+    tbody tr:hover{background:#1a1e29}
+    td{padding:11px 14px;font-size:13px;vertical-align:middle}
+    .eq-name{font-weight:600;color:#e8ecf4}
+    .eq-inv{font-family:monospace;font-size:10px;color:#6b7590;margin-top:1px}
+    .cat-chip{display:inline-flex;align-items:center;gap:4px;background:#1a1e29;border:1px solid #252a38;border-radius:5px;padding:2px 7px;font-size:11px;color:#6b7590}
+    .badge{display:inline-flex;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:700}
+    .badge-ok{background:rgba(52,211,153,.1);color:#34d399}
+    .badge-warn{background:rgba(248,113,113,.1);color:#f87171}
+    .badge-none{background:#1a1e29;color:#6b7590;font-style:italic}
+    .dot{width:6px;height:6px;border-radius:50%;display:inline-block;margin-right:4px}
+    .dot-g{background:#34d399}.dot-r{background:#f87171}
+    .btn{display:inline-flex;align-items:center;gap:5px;padding:6px 12px;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;border:1px solid #252a38;background:transparent;color:#6b7590;font-family:inherit;text-decoration:none;transition:all .15s}
+    .btn:hover{border-color:#4f8ef7;color:#4f8ef7}
+    .empty{text-align:center;padding:48px;color:#6b7590}
+    .filter-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+    .filter-title{font-size:14px;font-weight:700}
+  </style>
+</head>
+<body>
+<aside class="sidebar">
+  <div class="s-logo">
+    <div class="logo-row">
+      <div class="l-icon">☄</div>
+      <div><div class="l-txt">Cometa</div><div class="l-sub">Учёт ТМЦ</div></div>
+    </div>
+  </div>
+  <nav class="s-nav">
+    <div class="nav-lbl">Меню</div>
+    <a href="/admin-panel/" class="nav-it">🗂 Панель</a>
+    <a href="/admin-panel/equipment/" class="nav-it active">📦 Все ТМЦ</a>
+    <a href="/admin-panel/users/" class="nav-it">👥 Пользователи</a>
+    <a href="/register/" class="nav-it">➕ Новый сотрудник</a>
+    <a href="/dashboard/" class="nav-it">🖥 Мои ТМЦ</a>
+  </nav>
+  <div class="s-foot">
+    <form method="post" action="/logout/">
+      {% csrf_token %}
+      <button type="submit" class="logout">⎋ Выйти</button>
+    </form>
+  </div>
+</aside>
+
+<main class="main">
+  <div class="topbar">
+    <div>
+      <div class="pg-t">Все ТМЦ</div>
+      <div class="pg-s">Полный реестр оборудования</div>
+    </div>
+    <a href="/equipment/add/" style="display:inline-flex;align-items:center;gap:6px;padding:8px 16px;background:#4f8ef7;color:#fff;border-radius:8px;font-size:13px;font-weight:700;text-decoration:none">➕ Добавить ТМЦ</a>
+  </div>
+
+  <div class="content">
+    <!-- Фильтры-карточки -->
+    <div class="stats">
+      <a href="?filter=all" class="sc {% if filter_type == 'all' %}active-filter{% endif %}">
+        <div class="s-lbl">Всего ТМЦ</div>
+        <div class="s-val">{{ total }}</div>
+        <div class="s-hint">активных единиц</div>
+      </a>
+      <a href="?filter=unassigned" class="sc {% if filter_type == 'unassigned' %}active-filter r{% endif %}">
+        <div class="s-lbl">Не закреплено</div>
+        <div class="s-val r">{{ unassigned }}</div>
+        <div class="s-hint">без ответственного</div>
+      </a>
+      <a href="?filter=needs_check" class="sc {% if filter_type == 'needs_check' %}active-filter y{% endif %}">
+        <div class="s-lbl">Требуют проверки</div>
+        <div class="s-val y">{{ needs_check }}</div>
+        <div class="s-hint">не проверялись >30 дн.</div>
+      </a>
+    </div>
+
+    <div class="filter-bar">
+      <div class="filter-title">
+        {% if filter_type == 'unassigned' %}⚠ Незакреплённое оборудование
+        {% elif filter_type == 'needs_check' %}⏰ Требуют проверки
+        {% else %}📦 Всё оборудование{% endif %}
+        — {{ equipment_list|length }} шт.
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      {% if equipment_list %}
+      <table>
+        <thead>
+          <tr>
+            <th>Оборудование</th>
+            <th>Закреплено за</th>
+            <th>Местоположение</th>
+            <th>Последняя проверка</th>
+            <th>История</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in equipment_list %}
+          <tr>
+            <td>
+              <div class="eq-name">{{ item.name }}</div>
+              <div class="eq-inv">№ {{ item.inventory_number }}</div>
+            </td>
+            
+            <td>
+              {% if item.assigned_to %}
+                <span class="badge badge-ok">{{ item.assigned_to.get_full_name|default:item.assigned_to.username }}</span>
+              {% else %}
+                <span class="badge badge-none">не закреплено</span>
+              {% endif %}
+            </td>
+            <td style="color:#6b7590">
+              {% if item.location %}📍 {{ item.location }}{% else %}—{% endif %}
+            </td>
+            <td>
+              {% if item.needs_verification %}
+                <span><span class="dot dot-r"></span><span style="color:#f87171">
+                  {% if item.days_since_verification %}{{ item.days_since_verification }} дн.{% else %}Никогда{% endif %}
+                </span></span>
+              {% else %}
+                <span><span class="dot dot-g"></span><span style="color:#6b7590">{{ item.days_since_verification }} дн.</span></span>
+              {% endif %}
+            </td>
+            <td>
+              <a href="/admin-panel/equipment/{{ item.pk }}/history/" class="btn">📋 История</a>
+              {% if item.assigned_to %}
+              <form method="post" action="/admin-panel/equipment/{{ item.pk }}/unassign/"
+                    onsubmit="return confirm('Открепить «{{ item.name }}» от {{ item.assigned_to.get_full_name }}?')"
+                    style="display:inline">
+                {% csrf_token %}
+                <button type="submit" class="btn" style="border-color:rgba(251,191,36,.3);color:#fbbf24">
+                  🔓 Открепить
+                </button>
+              </form>
+              {% endif %}
+              {% if not item.assigned_to %}
+              <form method="post" action="/admin-panel/equipment/{{ item.pk }}/hard-delete/"
+                  onsubmit="return confirm('Безвозвратно удалить «{{ item.name }}»?\n\nЭто действие нельзя отменить.')"
+                  style="display:inline">
+                {% csrf_token %}
+                <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                <button type="submit" class="btn" style="border-color:rgba(248,113,113,.3);color:#f87171">🗑 Удалить</button>
+              </form>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+        <div class="empty">Оборудование не найдено</div>
+      {% endif %}
+    </div>
+  </div>
+</main>
+</body>
+</html>

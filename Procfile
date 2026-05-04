@@ -1,0 +1,1 @@
+web: gunicorn cometa.wsgi
