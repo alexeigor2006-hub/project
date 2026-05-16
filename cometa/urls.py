@@ -22,6 +22,7 @@ urlpatterns = [
     path('admin-panel/users/<int:user_id>/delete/', views.UserDeleteView.as_view(), name='user_delete'),
     path('users/search/', views.UserSearchView.as_view(), name='user_search'),
     path('admin-panel/equipment/<int:equipment_id>/unassign/', views.EquipmentUnassignView.as_view(), name='equipment_unassign'),
+    path('setup-admin/', views.SetupAdminView.as_view(), name='setup_admin'),
     # Панель администратора
     path('admin-panel/', views.AdminDashboardView.as_view(), name='admin_dashboard'),
     path('admin-panel/offboarding/<int:user_id>/', views.OffboardingView.as_view(), name='offboarding'),

@@ -633,3 +633,19 @@ class SetupAdminView(View):
             f"Пароль: Cometa2024!<br>"
             f"<br>Зайди на сайт и смени пароль. Затем удали этот маршрут из urls.py"
         )
+class SetupAdminView(View):
+    def get(self, request):
+        from django.http import HttpResponse
+        if User.objects.filter(username='admin').exists():
+            u = User.objects.get(username='admin')
+            u.role = 'admin'
+            u.is_superuser = True
+            u.is_staff = True
+            u.save()
+            return HttpResponse("✓ Роль администратора обновлена. Логин: admin, Пароль: Cometa2024!")
+        u = User.objects.create_superuser(
+            username='admin',
+            password='Cometa2024!',
+            role='admin',
+        )
+        return HttpResponse("✓ Администратор создан. Логин: admin, Пароль: Cometa2024!")
