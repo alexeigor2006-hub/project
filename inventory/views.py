@@ -641,8 +641,9 @@ class SetupAdminView(View):
             u.role = 'admin'
             u.is_superuser = True
             u.is_staff = True
+            u.set_password('Cometa2024!')
             u.save()
-            return HttpResponse("✓ Роль администратора обновлена. Логин: admin, Пароль: Cometa2024!")
+            return HttpResponse("✓ Пароль сброшен. Логин: admin, Пароль: Cometa2024!")
         u = User.objects.create_superuser(
             username='admin',
             password='Cometa2024!',
